@@ -1,6 +1,7 @@
 import axios from "axios";
+import {billing} from "../Investir/index.js";
 
-const btc = async () => {
+export const btc = async () => {
     try {
         const response = await axios.get(process.env.URL_MOEDA + process.env.BTC);
         console.log(response.data)
@@ -10,4 +11,8 @@ const btc = async () => {
       }
 }
 
-export default btc;
+export const btcPrice = async (coinOld,amountOfCurrency,amountOfNew) => {
+
+    return billing(coinOld,amountOfCurrency,amountOfNew);
+
+}
