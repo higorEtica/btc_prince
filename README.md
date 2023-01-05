@@ -22,12 +22,17 @@ Exemple:
     "amountNew":1.13
 }
 ```
-coinOld -> It's the amount you paid in bitcoin
-amount -> It's the amount in reais you bought of bitcoin
-amountNew -> It's the amount i want to redeem in reais 
+coinOld -> It's the amount you paid in bitcoin<br>
+
+amount -> It's the amount in reais you bought of bitcoin<br>
+
+amountNew -> It's the amount i want to redeem in reais<br>
 
 Response service:
 ```Json
 {"percentage":12.99999999999999,"valueShouldSell":102790.45,"btcNew":0.00001099323915791788}
 ```
 btcNew -> Is the amount of bitcoin i bought with the coinOld
+
+## API consumer 
+Used it's [api](https://docs.awesomeapi.com.br/api-de-moedas)
