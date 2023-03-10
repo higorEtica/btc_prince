@@ -8,12 +8,48 @@ import { io } from "../../index.js";
 // create application/json parser
 var jsonParser = bodyParser.json();
 
+const intervalIds = [];
+
+const limpCacheSetInterval = async (arry) => {
+  if (!!arry) {
+    arry.forEach( async function (intervalId) {
+      const result = await intervalId;
+      
+      if(!!intervalId){
+        console.log( "Mostre aqui " + result);
+        clearInterval(intervalId);
+      }
+    });
+  }
+};
+
+function formatReal(int) {
+  var tmp = int + "";
+  tmp = tmp.replace(/([0-9]{2})$/g, ",$1");
+  if (tmp.length > 6) tmp = tmp.replace(/([0-9]{3}),([0-9]{2}$)/g, ".$1,$2");
+
+  return tmp;
+}
 const returnValueInReal = (res) => {
-  return "R$ " + res["bid"];
+  let float = formatReal(res["bid"]);
+  console.log(float);
+  return "R$ " + float;
+};
+
+const setIntervals = async (newFunctions) => {
+  return setInterval(async () => {
+    const resposta = await newFunctions();
+    io.emit("update", returnValueInReal(resposta));
+  }, 30000);
 };
 
 const router = Express.Router();
 router.get("/btc", async function (req, res) {
+  limpCacheSetInterval(intervalIds);
+  let btcs = await setIntervals(btc);
+  //console.log(btc);
+  intervalIds.push(btcs);
+
   const resposta = await btc();
   res.send(`
     <!doctype html>
@@ -37,6 +73,8 @@ router.get("/btc", async function (req, res) {
 });
 
 router.get("/usd", async function (req, res) {
+  setIntervals(Dolar);
+
   const resposta = await Dolar();
   res.send(`
   <!doctype html>
@@ -60,6 +98,9 @@ router.get("/usd", async function (req, res) {
 });
 
 router.get("/eur", async function (req, res) {
+  limpCacheSetInterval(intervalIds);
+  let eur = await setIntervals(Euro);
+  intervalIds.push(eur);
   const resposta = await Euro();
   res.send(`
   <!doctype html>
@@ -89,20 +130,5 @@ router.post("/btc/price", jsonParser, async (req, res) => {
   let newObject = await btcPrice(coinOld, amountOfCurrency, amountOfNew);
   res.send(JSON.stringify(newObject));
 });
-
-setInterval(async () => {
-  const resposta = await btc();
-  io.emit("update", returnValueInReal(resposta));
-}, 30000);
-
-setInterval(async () => {
-  const resposta = await Dolar();
-  io.emit("update", returnValueInReal(resposta));
-}, 30000);
-
-setInterval(async () => {
-  const resposta = await Euro();
-  io.emit("update", returnValueInReal(resposta));
-}, 30000);
 
 export default router;
